@@ -1,9 +1,10 @@
 const std = @import("std");
 const rl = @import("raylib");
-const Buttion = @import("buttion.zig").Buttion;
 
-fn AddCoffee() void {
-    std.debug.print("add coffee: \n", .{});
+const Buttion = @import("widgets/buttion.zig").Buttion;
+
+fn AddCoffee(coffee: []const u8) void {
+    std.debug.print("add coffee: {s}\n", .{coffee});
 }
 
 pub fn main() anyerror!void {
@@ -12,8 +13,7 @@ pub fn main() anyerror!void {
     const screenWidth = 720;
     const screenHeight = 1080;
 
-    // var test_text = "test text";
-    const buttion = Buttion{
+    var buttion = Buttion{
         .rec = rl.Rectangle{
             .height = 50,
             .width = 100,
@@ -21,10 +21,10 @@ pub fn main() anyerror!void {
             .y = 100,
         },
         .back_ground_color = .green,
-        .onClick = AddCoffee,
+        .color = .green,
+        .text = "buttion",
+        .text_size = 25,
     };
-
-    var age: u32 = 30;
 
     rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.closeWindow(); // Close window and OpenGL context
@@ -39,12 +39,12 @@ pub fn main() anyerror!void {
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
 
-        _ = buttion.update();
-        const name = "Alice";
-        age += 1;
-        const formatted_string = try std.fmt.allocPrint(std.heap.page_allocator, "Name: {s}, Age: {d}\n", .{ name, age });
-        defer std.heap.page_allocator.free(formatted_string);
-        // std.debug.print("{s}", .{formatted_string});
+        switch (buttion.update()) {
+            .Clicked => {
+                AddCoffee("black market");
+            },
+            else => {},
+        }
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -52,7 +52,6 @@ pub fn main() anyerror!void {
         defer rl.endDrawing();
 
         rl.clearBackground(.dark_gray);
-        rl.drawText(@ptrCast(formatted_string), 190, 200, 32, .light_gray);
         buttion.draw();
         //----------------------------------------------------------------------------------
     }
